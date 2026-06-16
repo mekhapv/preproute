@@ -1121,8 +1121,13 @@ export const DashboardPage = () => {
           block: "start",
         });
       });
-    } catch {
-      setQuestionError("Unable to save questions.");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg =
+        axiosErr?.response?.data?.message ||
+        axiosErr?.message ||
+        "Unable to save questions.";
+      setQuestionError(msg);
     } finally {
       setIsSavingQuestion(false);
     }
