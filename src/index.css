@@ -2498,8 +2498,10 @@ body {
   }
 
   .create-test-btn {
+    flex: none;
     width: 100%;
     min-width: 0;
+    height: 44px;
   }
 
   .status-filter-tabs {
