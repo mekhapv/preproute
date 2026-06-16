@@ -2351,7 +2351,7 @@ export const DashboardPage = () => {
             ) : null}
 
             <div className="form-actions">
-              <button type="button" className="secondary-action">
+              <button type="button" className="secondary-action" onClick={() => navigate("/dashboard")}>
                 Cancel
               </button>
               <button
