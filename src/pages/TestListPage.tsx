@@ -221,6 +221,7 @@ export const TestListPage = () => {
               <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
             </svg>
           </button>
+          <img className="header-logo-mobile" src="/logo.png" alt="PrepRoute" />
           <div className="header-actions">
             <button type="button" className="notification-btn" aria-label="Notifications">
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -246,6 +247,10 @@ export const TestListPage = () => {
               </button>
               {isProfileOpen && (
                 <div className="profile-dropdown" role="menu">
+                  <div className="profile-dropdown-user">
+                    <p className="profile-dropdown-name">{userId}</p>
+                    <p className="profile-dropdown-role">Admin</p>
+                  </div>
                   <button type="button" role="menuitem" onClick={handleLogout}>
                     Logout
                   </button>

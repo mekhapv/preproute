@@ -1281,6 +1281,7 @@ export const DashboardPage = () => {
                 <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
               </svg>
             </button>
+            <img className="header-logo-mobile" src="/logo.png" alt="PrepRoute" />
             <div className="header-actions">
               <button
                 type="button"
@@ -1318,6 +1319,10 @@ export const DashboardPage = () => {
                 </button>
                 {isProfileOpen && (
                   <div className="profile-dropdown" role="menu">
+                    <div className="profile-dropdown-user">
+                      <p className="profile-dropdown-name">{userId}</p>
+                      <p className="profile-dropdown-role">Admin</p>
+                    </div>
                     <button
                       type="button"
                       role="menuitem"
@@ -2133,6 +2138,7 @@ export const DashboardPage = () => {
               <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
             </svg>
           </button>
+          <img className="header-logo-mobile" src="/logo.png" alt="PrepRoute" />
           <div className="header-actions">
             <button
               type="button"
@@ -2166,6 +2172,10 @@ export const DashboardPage = () => {
               </button>
               {isProfileOpen && (
                 <div className="profile-dropdown" role="menu">
+                  <div className="profile-dropdown-user">
+                    <p className="profile-dropdown-name">{userId}</p>
+                    <p className="profile-dropdown-role">Admin</p>
+                  </div>
                   <button type="button" role="menuitem" onClick={handleLogout}>
                     Logout
                   </button>
