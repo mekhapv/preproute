@@ -695,8 +695,13 @@ export const DashboardPage = () => {
         }),
       );
       navigate("/test-creation/questions");
-    } catch {
-      setFormError("Unable to create test.");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg =
+        axiosErr?.response?.data?.message ||
+        axiosErr?.message ||
+        "Unable to create test.";
+      setFormError(msg);
     } finally {
       setIsSubmitting(false);
     }
