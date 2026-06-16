@@ -1673,13 +1673,25 @@ export const DashboardPage = () => {
             ) : (
               <>
                 <div className="question-number-row" ref={questionEditorSectionRef}>
-                  <h2>
-                    Question{" "}
-                    <span className="active-question-number">
-                      {activeQuestionNumber}
-                    </span>
-                    <span>/{plannedQuestionCount}</span>
-                  </h2>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <button
+                      type="button"
+                      className="qlist-toggle-btn"
+                      aria-label="Show question list"
+                      onClick={() => setIsSidebarOpen(true)}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+                      </svg>
+                    </button>
+                    <h2 style={{ margin: 0 }}>
+                      Question{" "}
+                      <span className="active-question-number">
+                        {activeQuestionNumber}
+                      </span>
+                      <span>/{plannedQuestionCount}</span>
+                    </h2>
+                  </div>
                   <div>
                     <button type="button">+ MCQ</button>
                     <button type="button" onClick={() => { setCsvError(""); setCsvStatus(""); csvInputRef.current?.click(); }}>CSV</button>
