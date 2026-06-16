@@ -145,8 +145,6 @@ type ApiStatusItemResponse<T> = {
   data: T
 }
 
-const hasApiBaseUrl = () => Boolean(import.meta.env.VITE_API_BASE_URL)
-
 export const getSubjects = async () => {
   const response = await apiClient.get<ApiStatusListResponse<Subject>>('/subjects')
   return response.data.status === 'success' ? response.data.data : []
