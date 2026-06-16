@@ -225,6 +225,7 @@ export const DashboardPage = () => {
   const [selectedMenu, setSelectedMenu] = useState<
     "dashboard" | "test-creation" | "tracking"
   >("test-creation");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isTestCreation = location.pathname.startsWith("/test-creation");
   const isQuestionCreation = location.pathname === "/test-creation/questions";
   const plannedQuestionCount = Math.max(
@@ -1194,8 +1195,15 @@ export const DashboardPage = () => {
   if (isQuestionCreation) {
     return (
       <main className="question-creation-shell">
+        {isSidebarOpen && (
+          <div
+            className="sidebar-overlay sidebar-open"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         <aside
-          className="question-left-panel"
+          className={`question-left-panel${isSidebarOpen ? " sidebar-open" : ""}`}
           aria-label="Question creation navigation"
         >
           <div className="question-logo-block">
@@ -1263,6 +1271,16 @@ export const DashboardPage = () => {
 
         <section className="question-page-main">
           <header className="question-topbar">
+            <button
+              type="button"
+              className="hamburger-btn"
+              aria-label="Open menu"
+              onClick={() => setIsSidebarOpen((open) => !open)}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+              </svg>
+            </button>
             <div className="header-actions">
               <button
                 type="button"
@@ -2060,13 +2078,20 @@ export const DashboardPage = () => {
           {formStatus}
         </div>
       ) : null}
-      <aside className="dashboard-sidebar" aria-label="Main menu">
+      {isSidebarOpen && (
+        <div
+          className="sidebar-overlay sidebar-open"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      <aside className={`dashboard-sidebar${isSidebarOpen ? " sidebar-open" : ""}`} aria-label="Main menu">
         <img className="dashboard-brand" src="/logo.png" alt="Nandi logo" />
         <nav className="sidebar-menu">
           <button
             type="button"
             className="menu-item"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => { setIsSidebarOpen(false); navigate("/dashboard"); }}
           >
             <img className="menu-icon" src="/dashicondef.png" alt="" />
             <span>Dashboard</span>
@@ -2077,6 +2102,7 @@ export const DashboardPage = () => {
               selectedMenu === "test-creation" && isTestCreation ? " active" : ""
             }`}
             onClick={() => {
+              setIsSidebarOpen(false);
               setSelectedMenu("test-creation");
               navigate("/test-creation");
             }}
@@ -2087,7 +2113,7 @@ export const DashboardPage = () => {
           <button
             type="button"
             className={`menu-item${selectedMenu === "tracking" ? " active" : ""}`}
-            onClick={() => setSelectedMenu("tracking")}
+            onClick={() => { setIsSidebarOpen(false); setSelectedMenu("tracking"); }}
           >
             <img className="menu-icon" src="/track.png" alt="" />
             <span>Test Tracking</span>
@@ -2097,6 +2123,16 @@ export const DashboardPage = () => {
 
       <section className="dashboard-main">
         <header className="dashboard-header">
+          <button
+            type="button"
+            className="hamburger-btn"
+            aria-label="Open menu"
+            onClick={() => setIsSidebarOpen((open) => !open)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+            </svg>
+          </button>
           <div className="header-actions">
             <button
               type="button"

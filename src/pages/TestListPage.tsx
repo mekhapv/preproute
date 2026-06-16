@@ -69,6 +69,7 @@ export const TestListPage = () => {
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const userId = (user?.userId as string | undefined) ?? "vedant-admin";
@@ -171,13 +172,20 @@ export const TestListPage = () => {
 
   return (
     <main className="dashboard-shell">
-      <aside className="dashboard-sidebar" aria-label="Main menu">
+      {isSidebarOpen && (
+        <div
+          className="sidebar-overlay sidebar-open"
+          onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      <aside className={`dashboard-sidebar${isSidebarOpen ? " sidebar-open" : ""}`} aria-label="Main menu">
         <img className="dashboard-brand" src="/logo.png" alt="PrepRoute logo" />
         <nav className="sidebar-menu">
           <button
             type="button"
             className={`menu-item${selectedMenu === "dashboard" ? " active" : ""}`}
-            onClick={() => { setSelectedMenu("dashboard"); navigate("/dashboard"); }}
+            onClick={() => { setIsSidebarOpen(false); setSelectedMenu("dashboard"); navigate("/dashboard"); }}
           >
             <img className="menu-icon" src="/dashicondef.png" alt="" />
             <span>Dashboard</span>
@@ -185,7 +193,7 @@ export const TestListPage = () => {
           <button
             type="button"
             className="menu-item"
-            onClick={() => { setSelectedMenu("test-creation"); navigate("/test-creation"); }}
+            onClick={() => { setIsSidebarOpen(false); setSelectedMenu("test-creation"); navigate("/test-creation"); }}
           >
             <img className="menu-icon" src="/createTestClicked.png" alt="" />
             <span>Test Creation</span>
@@ -193,7 +201,7 @@ export const TestListPage = () => {
           <button
             type="button"
             className={`menu-item${selectedMenu === "tracking" ? " active" : ""}`}
-            onClick={() => setSelectedMenu("tracking")}
+            onClick={() => { setIsSidebarOpen(false); setSelectedMenu("tracking"); }}
           >
             <img className="menu-icon" src="/track.png" alt="" />
             <span>Test Tracking</span>
@@ -203,6 +211,16 @@ export const TestListPage = () => {
 
       <section className="dashboard-main">
         <header className="dashboard-header">
+          <button
+            type="button"
+            className="hamburger-btn"
+            aria-label="Open menu"
+            onClick={() => setIsSidebarOpen((open) => !open)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
+            </svg>
+          </button>
           <div className="header-actions">
             <button type="button" className="notification-btn" aria-label="Notifications">
               <svg viewBox="0 0 24 24" aria-hidden="true">
