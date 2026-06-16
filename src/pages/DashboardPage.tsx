@@ -194,6 +194,8 @@ export const DashboardPage = () => {
     Record<number, string>
   >(initialQuestionState.savedQuestionIds);
   const [questionNotice, setQuestionNotice] = useState("");
+  const [csvError, setCsvError] = useState("");
+  const [csvStatus, setCsvStatus] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormStatus, setEditFormStatus] = useState("");
   const [editFormError, setEditFormError] = useState("");
@@ -219,6 +221,7 @@ export const DashboardPage = () => {
   const questionEditorRef = useRef<HTMLDivElement | null>(null);
   const questionEditorSectionRef = useRef<HTMLDivElement | null>(null);
   const publishConfirmationRef = useRef<HTMLElement | null>(null);
+  const csvInputRef = useRef<HTMLInputElement | null>(null);
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const userId = (user?.userId as string | undefined) ?? "vedant-admin";
@@ -1120,6 +1123,92 @@ export const DashboardPage = () => {
     }
   };
 
+  const parseCsvLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    setCsvError("");
+    setCsvStatus("");
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const text = (ev.target?.result as string) ?? "";
+        const lines = text.trim().split(/\r?\n/).filter(Boolean);
+        if (lines.length < 2) {
+          setCsvError("CSV must have a header row and at least one question.");
+          return;
+        }
+        const dataLines = lines.slice(1);
+        const validCorrectOptions = ["option1", "option2", "option3", "option4"] as const;
+        type CorrectOpt = typeof validCorrectOptions[number];
+
+        const newDrafts: Record<number, QuestionDraft> = {};
+        const errors: string[] = [];
+
+        dataLines.forEach((line, idx) => {
+          const cols = parseCsvLine(line);
+          const [q, o1, o2, o3, o4, correct, explanation, difficulty] = cols;
+          if (!q || !o1 || !o2 || !o3 || !o4) {
+            errors.push(`Row ${idx + 2}: question and 4 options are required.`);
+            return;
+          }
+          const correctOpt: CorrectOpt = validCorrectOptions.includes(correct as CorrectOpt)
+            ? (correct as CorrectOpt)
+            : "option1";
+          newDrafts[idx + 1] = {
+            questionText: q,
+            questionOptions: [o1, o2, o3, o4],
+            correctOption: correctOpt,
+            explanation: explanation ?? "",
+            questionTextAlign: "left",
+            questionDifficulty: ["easy", "medium", "difficult"].includes(difficulty) ? difficulty : currentTestSummary.difficulty,
+            questionTopicId: currentTestSummary.topicId ?? "",
+            questionSubTopicId: currentTestSummary.subTopicId ?? "",
+          };
+        });
+
+        if (errors.length > 0) {
+          setCsvError(errors.join(" "));
+          return;
+        }
+        if (Object.keys(newDrafts).length === 0) {
+          setCsvError("No valid questions found in the CSV.");
+          return;
+        }
+
+        setQuestionDrafts(newDrafts);
+        setSavedQuestionIds({});
+        setActiveQuestionNumber(1);
+        applyQuestionDraft(newDrafts[1]);
+        setCsvStatus(`${Object.keys(newDrafts).length} questions loaded from CSV.`);
+      } catch {
+        setCsvError("Failed to parse CSV. Please check the file format.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handlePublishClick = () => {
     if (!areAllQuestionsSaved) {
       setQuestionNotice(
@@ -1593,9 +1682,19 @@ export const DashboardPage = () => {
                   </h2>
                   <div>
                     <button type="button">+ MCQ</button>
-                    <button type="button">CSV</button>
+                    <button type="button" onClick={() => { setCsvError(""); setCsvStatus(""); csvInputRef.current?.click(); }}>CSV</button>
+                    <input
+                      ref={csvInputRef}
+                      type="file"
+                      accept=".csv"
+                      style={{ display: "none" }}
+                      onChange={handleCsvUpload}
+                    />
                   </div>
                 </div>
+
+                {csvError ? <p className="form-message error">{csvError}</p> : null}
+                {csvStatus ? <p className="form-message success">{csvStatus}</p> : null}
 
                 {questionNotice ? (
                   <p className="question-number-notice">{questionNotice}</p>
